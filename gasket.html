@@ -1,0 +1,155 @@
+<!DOCTYPE html">
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Sierpinski Gasket</title>
+
+  <script type="text/javascript">
+    
+    var canvas;
+    var context;
+    
+    window.onload = init;
+      
+    function init() {
+      
+      canvas = document.getElementById("theCanvas");
+      context = canvas.getContext("2d");
+      
+      var drawButton = document.getElementById("drawButton");
+      drawButton.onclick = handleDrawButtonClick;
+      
+      var clearButton = document.getElementById("clearButton");
+      clearButton.onclick = handleClearButtonClick;
+      
+    }
+      
+    function handleDrawButtonClick() {
+      
+      var depthInput = document.getElementById("depthInput");
+      var distortionInput = document.getElementById("distortionInput");
+      
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      gasket(depthInput.value, distortionInput.value, 50.0,693.0, 850.0,693.0, 450.0,0.0);
+    }
+      
+    function handleClearButtonClick() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+      
+    
+    //
+    //             C
+    //            / \ 
+    //           /   \
+    //          /     \
+    //         D       F
+    //        /         \
+    //       /           \
+    //      /             \
+    //     A-------E-------B
+    //
+    
+    function gasket(depth, distortion, ax,ay, bx,by, cx,cy) {
+      if(depth > 0)   {
+        // Calculate middle points D, E, F.
+        var dx = (ax+cx)/2.0; var dy = (ay+cy)/2.0;
+        var ex = (ax+bx)/2.0; var ey = (ay+by)/2.0;
+        var fx = (bx+cx)/2.0; var fy = (by+cy)/2.0;
+        // Distort.
+        var mx = (ax+bx+cx)/3.0; var my = (ay+by+cy)/3.0;
+        var mdDist = distortion*Math.sqrt(sqr(dx-mx) + sqr(dy-my));
+        var meDist = distortion*Math.sqrt(sqr(ex-mx) + sqr(ey-my));
+        var mfDist = distortion*Math.sqrt(sqr(fx-mx) + sqr(fy-my));
+        dx += 2.0*(Math.random()-0.5)*mdDist; dy += 2.0*(Math.random()-0.5)*mdDist;
+        ex += 2.0*(Math.random()-0.5)*meDist; ey += 2.0*(Math.random()-0.5)*meDist;
+        fx += 2.0*(Math.random()-0.5)*mfDist; fy += 2.0*(Math.random()-0.5)*mfDist;
+        // Recur.
+        gasket(depth-1, distortion, ax,ay, ex,ey, dx,dy); // AED
+        gasket(depth-1, distortion, ex,ey, bx,by, fx,fy); // EBF
+        gasket(depth-1, distortion, dx,dy, fx,fy, cx,cy); // DFC
+      } else {
+        fillTriangle(Math.floor(ax),Math.floor(ay), Math.floor(bx),Math.floor(by), Math.floor(cx),Math.floor(cy));
+      }
+    }
+    
+    function fillTriangle(ax,ay,bx,by,cx,cy) {
+      context.beginPath();
+      context.moveTo(ax,ay);
+      context.lineTo(bx,by);
+      context.lineTo(cx,cy);
+      context.closePath();
+      
+      context.fillStyle = "black";
+      context.fill();
+    }
+    
+    function sqr(x) {
+      return x*x;
+    }
+    
+  </script>
+  
+  <link rel="stylesheet" href="firststyle.css">
+  
+</head>
+
+<body>
+
+
+<!-- Logo - links to home page -->
+<div class="logo">
+  <img src="thijsbeerlapalma2.jpg"/>
+</div>
+
+<!-- Site navigation menu -->
+<ul class="navbar">
+  <li><a href="home.html">Home</a>
+  <li><a href="gasket.html">Sierpinski</a>
+</ul>
+
+
+<!-- Main content -->
+<h1>Sierpinski gasket with variable random distortion</h1>
+
+<canvas id="theCanvas" width="900" height="750">
+</canvas>
+
+<div class="refmap">
+  <h2>Explanation</h2>
+  <p>
+  The <a href="http://en.wikipedia.org/wiki/Sierpinski_triangle" target="_blank">Sierpinski Gasket</a> is a construct invented
+  by the Polish mathematician 
+  <a href="http://en.wikipedia.org/wiki/Wac%C5%82aw_Sierpi%C5%84ski" target="_blank">Wacław Franciszek Sierpiński (March 14, 1882 to October 21, 1969)</a>
+  </p>
+  The gasket is constructed as follows:
+  <ul>
+  <li>Starting with a triangle, take out the middle part, </li>
+  <li>Do that again with the three remaining triangles, and so on. </li>
+  </ul>
+  <p>
+  We add a little flavour by adding a random distortion to each "middle point". 
+  </p>
+</div>
+
+<div class="controls">
+  <h2>Parameters</h2>
+  <form>
+    <p><input id="depthInput" type="text" pattern="\d" placeholder="Enter depth (1 to 9)"/></p>
+    <p><input id="distortionInput" type="text" pattern="0?\.\d+" placeholder="Enter distortion (0.0 to 0.999)"/></p>
+    <p>
+      <input id="drawButton" type="button" value="Draw!"/>
+      <input id="clearButton" type="button" value="Clear!"/>
+    </p>
+  </form>
+</div>
+
+<!-- Sign and date -->
+<address>
+  26 January 2014<br>
+  thijswijs@gmail.com
+</address>
+
+</body>
+
+</html>
