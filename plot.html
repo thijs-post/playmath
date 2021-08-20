@@ -1,0 +1,181 @@
+<!DOCTYPE html">
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Function Plot</title>
+  
+  <style>
+  #stage {
+    width: 600px;
+    height: 600px;
+    position: relative;
+    border: 1px solid black;
+  }
+
+  canvas { position: absolute; }
+  #thePlotCanvas { z-index: 2; }
+  #theAxesCanvas { z-index: 1; }
+  
+  </style>
+  
+
+  <script type="text/javascript">
+    
+	var wStr = "600";  
+	var hStr = "600";
+	var w = parseFloat(wStr);
+	var h = parseFloat(hStr);
+
+	var plotCanvas;
+    var plotContext;
+    
+    window.onload = init;
+      
+    function init() {
+      
+      plotCanvas = document.getElementById("thePlotCanvas");
+      plotContext = plotCanvas.getContext("2d");
+      
+      var drawButton = document.getElementById("drawButton");
+      drawButton.onclick = handleDrawButtonClick;
+      
+      var clearButton = document.getElementById("clearButton");
+      clearButton.onclick = handleClearButtonClick;
+      
+    }
+      
+    function handleDrawButtonClick() {
+      
+      plotContext.clearRect(0, 0, w, h);
+      
+      //var fstr = "x*x - 2.0";
+      var fstr = functionInput.value;
+      var theFunction = eval("(x) => (" + fstr + ")");
+      
+
+      plot(theFunction, 
+    		  parseFloat(xMinInput.value), parseFloat(xMaxInput.value), 
+    		  parseFloat(yMinInput.value), parseFloat(yMaxInput.value));
+    }
+      
+    function handleClearButtonClick() {
+      plotContext.clearRect(0, 0, plotCanvas.width, plotCanvas.height);
+    }
+
+      
+    function plot(aFunction, xMin, xMax, yMin, yMax) {
+
+      plotContext.beginPath();
+      plotContext.moveTo(0, toCanvasY(aFunction(xMin), yMin, yMax));
+      for(i=1;i<=plotCanvas.width;i++) {
+    	  var x = toX(i, xMin, xMax);
+    	  var y = aFunction(x);
+    	  var plotCanvasY = toCanvasY(y, yMin, yMax);
+    	  // console.log("x=" + x + ", y=" + y + " -- " + i + " , " + plotCanvasY);
+          plotContext.lineTo(i, plotCanvasY);
+      }
+      plotContext.strokeStyle = "red";
+      plotContext.lineWidth=3;
+      plotContext.stroke();
+
+
+    }
+    
+    function toCanvasX(x, xMin, xMax) {
+        return Math.floor( w*(x-xMin)/(xMax-xMin) );
+    }
+
+    function toCanvasY(y, yMin, yMax) {
+        return Math.floor( h*(yMax-y)/(yMax-yMin) );
+    }
+
+    function toX(canvasX, xMin, xMax) {
+        return( xMin + (canvasX/w)*(xMax-xMin) );
+    }
+
+    
+    function fillTriangle(ax,ay,bx,by,cx,cy) {
+      plotContext.beginPath();
+      plotContext.moveTo(ax,ay);
+      plotContext.lineTo(bx,by);
+      plotContext.lineTo(cx,cy);
+      plotContext.closePath();
+      
+      plotContext.fillStyle = "black";
+      plotContext.fill();
+    }
+    
+    function sqr(x) {
+      return x*x;
+    }
+    
+  </script>
+  
+  <link rel="stylesheet" href="firststyle.css">
+  
+</head>
+
+<body>
+
+
+<!-- Logo - links to home page -->
+<div class="logo">
+  <img src="thijsbeerlapalma2.jpg"/>
+</div>
+
+<!-- Site navigation menu -->
+<ul class="navbar">
+  <li><a href="home.html">Home</a>
+  <li><a href="gasket.html">Sierpinski</a>
+</ul>
+
+
+<!-- Main content -->
+<h1>Plot a function</h1>
+
+<div id="stage">
+
+
+	<canvas id="thePlotCanvas" width="600" height="600" ></canvas>
+	<canvas id="theAxesCanvas" width="600" height="600" ></canvas>
+
+</div>
+
+
+
+
+<div class="refmap">
+  <h2>Explanation</h2>
+  <p>
+    The specified function is plotted, from x-min to x-max.
+  </p>
+</div>
+
+<div class="controls">
+  <h2>Parameters</h2>
+  <form>
+    <p><input id="functionInput" type="text" placeholder="Enter a function of x"/></p>
+    <p>
+      <input id="xMinInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter x-min"/>
+      <input id="xMaxInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter x-max"/>
+    </p>
+    <p>
+      <input id="yMinInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter y-min"/>
+      <input id="yMaxInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter y-max"/>
+    </p>
+    <p>
+      <input id="drawButton" type="button" value="Draw!"/>
+      <input id="clearButton" type="button" value="Clear!"/>
+    </p>
+  </form>
+</div>
+
+<!-- Sign and date -->
+<address>
+  1 July 2020<br>
+  thijswijs@gmail.com
+</address>
+
+</body>
+
+</html>
