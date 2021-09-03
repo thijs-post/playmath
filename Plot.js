@@ -2,12 +2,22 @@
  * 
  */
 
+// TODO add reactivity to boundary value edits
+
+const PLOT_COLOR = "red";
+const PLOT_LINEWIDTH = 3;
+const AXES_COLOR = "black";
+const AXES_LINEWIDTH = 1;
+const GRID_COLOR = "black";
+const GRID_LINEWIDTH = 1;
+const GRID_LINEDASH = [2, 4];
+
 const TICK = 10;
 const HALF_TICK = 5;
 
+// Canvas dimensions, specified in the html.
 var wStr;
 var hStr;
-
 var wI;
 var hI;
 var wF;
@@ -15,9 +25,10 @@ var hF;
 
 var plotCanvas;
 var plotContext;
-
 var axesCanvas;
 var axesContext;
+var gridCanvas;
+var gridContext;
 
 var axesCheckbox;
 var gridCheckbox;
@@ -27,21 +38,26 @@ window.onload = init;
 function init() {
 
 	plotCanvas = document.getElementById("thePlotCanvas");
-	
 	wStr = plotCanvas.width;
 	hStr = plotCanvas.height;
-
 	wI = parseInt(wStr);
-	hI = parseInt(hStr);	
+	hI = parseInt(hStr);
 	wF = parseFloat(wStr);
 	hF = parseFloat(hStr);
-
 	plotContext = plotCanvas.getContext("2d");
+	plotContext.strokeStyle = PLOT_COLOR;
+	plotContext.lineWidth = PLOT_LINEWIDTH;
 
 	axesCanvas = document.getElementById("theAxesCanvas");
 	axesContext = axesCanvas.getContext("2d");
-	axesContext.strokeStyle = "black";
-	axesContext.lineWidth = 1;
+	axesContext.strokeStyle = AXES_COLOR;
+	axesContext.lineWidth = AXES_LINEWIDTH;
+
+	gridCanvas = document.getElementById("theGridCanvas");
+	gridContext = gridCanvas.getContext("2d");
+	gridContext.strokeStyle = GRID_COLOR;
+	gridContext.lineWidth = GRID_LINEWIDTH;
+	gridContext.setLineDash(GRID_LINEDASH);
 
 	var drawButton = document.getElementById("drawButton");
 	drawButton.onclick = handleDrawButtonClick;
@@ -50,9 +66,11 @@ function init() {
 	clearButton.onclick = handleClearButtonClick;
 
 	axesCheckbox = document.getElementById("axesCheckbox");
-	axesCheckbox.onclick = handleAxesGridCheckboxClick;
+	axesCheckbox.onclick = drawAxesAndGridIfDesired;
 	gridCheckbox = document.getElementById("gridCheckbox");
-	gridCheckbox.onclick = handleAxesGridCheckboxClick;
+	gridCheckbox.onclick = drawAxesAndGridIfDesired;
+	
+	drawAxesAndGridIfDesired();
 
 }
 
@@ -73,67 +91,77 @@ function handleClearButtonClick() {
 	plotContext.clearRect(0, 0, wI, hI);
 }
 
-function handleAxesGridCheckboxClick() {
+function drawAxesAndGridIfDesired() {
 
+
+	var xMin = parseFloat(xMinInput.value); var xMax = parseFloat(xMaxInput.value);
+	var yMin = parseFloat(yMinInput.value); var yMax = parseFloat(yMaxInput.value);
+
+	// The origin in canvas coordinates.
+	var originX = toCanvasX(0.0, xMin, xMax);
+	var originY = toCanvasY(0.0, yMin, yMax);
+	
+	// Tick mark properties.
+	var xTickIncrement = Math.pow(10, Math.floor(Math.log10(xMax - xMin)));
+	var firstXTick = xTickIncrement * (Math.ceil(xMin / xTickIncrement));
+	var halfXTickIncrement = xTickIncrement / 2.0;
+	var firstHalfXTick = firstXTick - halfXTickIncrement > xMin ? firstXTick - halfXTickIncrement : firstXTick + halfXTickIncrement;
+	var yTickIncrement = Math.pow(10, Math.floor(Math.log10(yMax - yMin)));
+	var firstYTick = yTickIncrement * (Math.ceil(yMin / yTickIncrement));
+	var halfYTickIncrement = yTickIncrement / 2.0;
+	var firstHalfYTick = firstYTick - halfYTickIncrement > yMin ? firstYTick - halfYTickIncrement : firstYTick + halfYTickIncrement;
+
+	axesContext.clearRect(0, 0, wI, hI);
 	if (axesCheckbox.checked) {
-		var xMin = parseFloat(xMinInput.value); var xMax = parseFloat(xMaxInput.value);
-		var yMin = parseFloat(yMinInput.value); var yMax = parseFloat(yMaxInput.value);
-
-		// The origin in canvas coordinates.
-		var originX = toCanvasX(0.0, xMin, xMax);
-		var originY = toCanvasY(0.0, yMin, yMax);
-
 		// Draw X and Y axes.
-		var ctx = axesContext;
-		//ctx.beginPath();
-		ctx.strokeStyle = "black";
-		ctx.lineWidth = 1;
-		drawLineSegment(ctx, 0, originY, wI, originY);
-		drawLineSegment(ctx, originX, 0, originX, hI);
+		drawLineSegment(axesContext, 0, originY, wI, originY);
+		drawLineSegment(axesContext, originX, 0, originX, hI);
 
 		// Tick marks.
-		var xTickIncrement = Math.pow(10, Math.floor(Math.log10(xMax-xMin)));
-		var halfXTickIncrement = xTickIncrement/2.0;
-		var firstXTick = xTickIncrement * (Math.ceil(xMin/xTickIncrement));
-		console.log("X-axis ticks from " + firstXTick + " increment " + xTickIncrement);
-		for(let xTick=firstXTick; xTick<=xMax; xTick+=xTickIncrement) {
-			let canvasXTick = toCanvasX(xTick, xMin, xMax);
-			drawLineSegment(ctx, canvasXTick, originY-TICK, canvasXTick, originY+TICK );
-			let halfCanvasXTick = toCanvasX(xTick+halfXTickIncrement, xMin, xMax);
-			drawLineSegment(ctx,halfCanvasXTick, originY-HALF_TICK, halfCanvasXTick, originY+HALF_TICK );
-			if(gridCheckbox.checked) {
-				ctx.setLineDash([2, 4]);
-				drawLineSegment(ctx, canvasXTick, 0, canvasXTick, hI);
-				ctx.setLineDash([]);
-			}
-		}
-		var yTickIncrement = Math.pow(10, Math.floor(Math.log10(yMax-yMin)));
-		var halfYTickIncrement = yTickIncrement/2.0;
-		var firstYTick = yTickIncrement * (Math.ceil(yMin/yTickIncrement));
-		console.log("Y-axis ticks from " + firstYTick + " increment " + yTickIncrement);
-		for(let yTick=firstYTick; yTick<=yMax; yTick+=yTickIncrement) {
-			let canvasYTick = toCanvasY(yTick, yMin, yMax);
-			drawLineSegment(ctx, originX-TICK, canvasYTick, originX+TICK, canvasYTick );
-			let halfCanvasYTick = toCanvasY(yTick+halfYTickIncrement, yMin, yMax);
-			drawLineSegment(ctx, originX-HALF_TICK, halfCanvasYTick, originX+HALF_TICK, halfCanvasYTick );
-			if(gridCheckbox.checked) {
-				ctx.setLineDash([2, 4]);
-				drawLineSegment(ctx, 0, canvasYTick, wI, canvasYTick);
-				ctx.setLineDash([]);
-			}
+		for (let tick = firstXTick; tick <= xMax; tick += xTickIncrement) {
+			let canvasTick = toCanvasX(tick, xMin, xMax);
+			drawLineSegment(axesContext, canvasTick, originY - TICK, canvasTick, originY + TICK);
 		}
 
+		for (let tick = firstHalfXTick; tick <= xMax; tick += xTickIncrement) {
+			let canvasTick = toCanvasX(tick, xMin, xMax);
+			drawLineSegment(axesContext, canvasTick, originY - HALF_TICK, canvasTick, originY + HALF_TICK);
+		}
 
+		for (let tick = firstYTick; tick <= yMax; tick += yTickIncrement) {
+			let canvasTick = toCanvasY(tick, yMin, yMax);
+			drawLineSegment(axesContext, originX - TICK, canvasTick, originX + TICK, canvasTick);
+		}
 
-	} else {
-		axesContext.clearRect(0, 0, wI, hI);
+		for (let tick = firstHalfYTick; tick <= yMax; tick += yTickIncrement) {
+			let canvasTick = toCanvasY(tick, yMin, yMax);
+			drawLineSegment(axesContext, originX - HALF_TICK, canvasTick, originX + HALF_TICK, canvasTick);
+		}
+
 	}
+
+
+	// Grid.
+	gridContext.clearRect(0, 0, wI, hI);
+	if (gridCheckbox.checked) {
+		for (let tick = firstXTick; tick <= xMax; tick += xTickIncrement) {
+			let canvasTick = toCanvasX(tick, xMin, xMax);
+			drawLineSegment(gridContext, canvasTick, 0, canvasTick, hI);
+		}
+		for (let tick = firstYTick; tick <= yMax; tick += yTickIncrement) {
+			let canvasTick = toCanvasY(tick, yMin, yMax);
+			drawLineSegment(gridContext, 0, canvasTick, wI, canvasTick);
+		}
+	}
+
 
 
 }
 
 
 function plot(aFunction, xMin, xMax, yMin, yMax) {
+	
+	// TODO handle OOB and NaN
 
 	plotContext.beginPath();
 	plotContext.moveTo(0, toCanvasY(aFunction(xMin), yMin, yMax));
@@ -143,8 +171,6 @@ function plot(aFunction, xMin, xMax, yMin, yMax) {
 		var plotCanvasY = toCanvasY(y, yMin, yMax);
 		plotContext.lineTo(i, plotCanvasY);
 	}
-	plotContext.strokeStyle = "red";
-	plotContext.lineWidth = 3;
 	plotContext.stroke();
 
 
