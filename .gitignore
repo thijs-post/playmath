@@ -75,3 +75,9 @@ nb-configuration.xml
 .DS_Store
 *.class
 *.icloud
+
+##########################
+## JavaScript, Node, etc
+##########################
+node_modules
+
