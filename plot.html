@@ -1,97 +1,111 @@
 <!DOCTYPE html">
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Function Plot</title>
-  
-  <style>
-  #stage {
-    width: 600px;
-    height: 600px;
-    position: relative;
-    border: 1px solid black;
-  }
+<meta charset="UTF-8" />
+<title>Function Plot</title>
 
-  canvas { position: absolute; }
-  #thePlotCanvas { z-index: 3; }
-  #theAxesCanvas { z-index: 2; }
-  #theGridCanvas { z-index: 1; }
-  
-  </style>
-  
-  <script src="Plot.js"></script>
+<style>
+#stage {
+	width: 600px;
+	height: 600px;
+	position: relative;
+	border: 1px solid black;
+}
 
-  <link rel="stylesheet" href="firststyle.css">
-  
+canvas {
+	position: absolute;
+}
+
+#thePlotCanvas {
+	z-index: 3;
+}
+
+#theAxesCanvas {
+	z-index: 2;
+}
+
+#theGridCanvas {
+	z-index: 1;
+}
+</style>
+
+
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css"
+	integrity="sha384-zTROYFVGOfTw7JV7KUu8udsvW2fx4lWOsCEDqhBreBwlHI4ioVRtmIvEThzJHGET"
+	crossorigin="anonymous">
+<script
+	src="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.js"
+	integrity="sha384-GxNFqL3r9uRJQhR+47eDxuPoNE7yLftQM8LcxzgS4HT73tp970WS/wV5p8UzCOmb"
+	crossorigin="anonymous"></script>
+<script src="node_modules/evaluatex/dist/evaluatex.min.js"></script>
+
+<script src="Plot.js"></script>
+<link rel="stylesheet" href="firststyle.css">
+
 </head>
 
 <body>
 
 
-<!-- Logo - links to home page -->
-<div class="logo">
-  <img src="thijsbeerlapalma2.jpg"/>
-</div>
+	<!-- Logo - links to home page -->
+	<div class="logo">
+		<img src="thijsbeerlapalma2.jpg" />
+	</div>
 
-<!-- Site navigation menu -->
-<ul class="navbar">
-  <li><a href="home.html">Home</a>
-  <li><a href="gasket.html">Sierpinski</a>
-</ul>
-
-
-<!-- Main content -->
-<h1>Plot a function</h1>
-
-<div id="stage">
+	<!-- Site navigation menu -->
+	<ul class="navbar">
+		<li><a href="home.html">Home</a>
+		<li><a href="gasket.html">Sierpinski</a>
+	</ul>
 
 
-	<canvas id="thePlotCanvas" width="600" height="600" ></canvas>
-	<canvas id="theAxesCanvas" width="600" height="600" ></canvas>
-	<canvas id="theGridCanvas" width="600" height="600" ></canvas>
+	<!-- Main content -->
+	<h1>Plot a function</h1>
 
-</div>
+	<div id="stage">
+		<canvas id="thePlotCanvas" width="600" height="600"></canvas>
+		<canvas id="theAxesCanvas" width="600" height="600"></canvas>
+		<canvas id="theGridCanvas" width="600" height="600"></canvas>
+	</div>
 
+	<div class="refmap">
+		<h2>Explanation</h2>
+		<p>The specified function is plotted, from x-min to x-max.</p>
+	</div>
 
+	<div class="controls">
+		<h2>Parameters</h2>
+		<form>
+			<p>
+				<input id="functionInput" type="text"
+					placeholder="Enter a function of x" />
+			</p>
+			<p>
+				<input id="xMinInput" type="text" pattern="\d+(\.\d+)?"
+					placeholder="Enter x-min" /> <input id="xMaxInput" type="text"
+					pattern="\d+(\.\d+)?" placeholder="Enter x-max" />
+			</p>
+			<p>
+				<input id="yMinInput" type="text" pattern="\d+(\.\d+)?"
+					placeholder="Enter y-min" /> <input id="yMaxInput" type="text"
+					pattern="\d+(\.\d+)?" placeholder="Enter y-max" />
+			</p>
+			<p>
+				<input id="axesCheckbox" type="checkbox" /> Show axes <input
+					id="gridCheckbox" type="checkbox" /> Show grid
+			</p>
+			<p>
+				<input id="drawButton" type="button" value="Draw!" /> <input
+					id="clearButton" type="button" value="Clear!" />
+			</p>
+		</form>
+	</div>
 
-
-<div class="refmap">
-  <h2>Explanation</h2>
-  <p>
-    The specified function is plotted, from x-min to x-max.
-  </p>
-</div>
-
-<div class="controls">
-  <h2>Parameters</h2>
-  <form>
-    <p><input id="functionInput" type="text" placeholder="Enter a function of x"/></p>
-    <p>
-      <input id="xMinInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter x-min"/>
-      <input id="xMaxInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter x-max"/>
-    </p>
-    <p>
-      <input id="yMinInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter y-min"/>
-      <input id="yMaxInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter y-max"/>
-    </p>
-    <p>
-      <input id="axesCheckbox" type="checkbox"/>
-      Show axes
-      <input id="gridCheckbox" type="checkbox"/>
-      Show grid
-    </p>
-    <p>
-      <input id="drawButton" type="button" value="Draw!"/>
-      <input id="clearButton" type="button" value="Clear!"/>
-    </p>
-  </form>
-</div>
-
-<!-- Sign and date -->
-<address>
-  26 August 2021<br>
-  thijswijs@gmail.com
-</address>
+	<!-- Sign and date -->
+	<address>
+		26 August 2021<br> thijswijs@gmail.com
+	</address>
 
 </body>
 
