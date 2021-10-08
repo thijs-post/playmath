@@ -30,12 +30,17 @@ var axesContext;
 var gridCanvas;
 var gridContext;
 
+var latexCheckbox;
 var axesCheckbox;
 var gridCheckbox;
+
+var theFormulaDiv;
 
 window.onload = init;
 
 function init() {
+	
+	theFormulaDiv = document.getElementById("theFormulaDiv")
 
 	plotCanvas = document.getElementById("thePlotCanvas");
 	wStr = plotCanvas.width;
@@ -65,6 +70,8 @@ function init() {
 	var clearButton = document.getElementById("clearButton");
 	clearButton.onclick = handleClearButtonClick;
 
+	latexCheckbox = document.getElementById("latexCheckbox");
+
 	axesCheckbox = document.getElementById("axesCheckbox");
 	axesCheckbox.onclick = drawAxesAndGridIfDesired;
 	gridCheckbox = document.getElementById("gridCheckbox");
@@ -79,7 +86,20 @@ function handleDrawButtonClick() {
 	plotContext.clearRect(0, 0, wI, hI);
 
 	var fstr = functionInput.value;
-	var theFunction = eval("(x) => (" + fstr + ")");
+	var params = JSON.parse(paramInput.value);
+	console.log("params = " + params);
+	var isLatex = latexCheckbox.checked;
+	var theFunction = evaluatex(fstr, params, { latex: isLatex });
+	
+	var formulaHtml = "";
+	if(isLatex) {
+		formulaHtml = katex.renderToString("f(x) = " + fstr, { throwOnError: false });
+	} else {
+		formulaHtml = "<h3>" + "f(x) = " + fstr + "</h3>";
+	}
+	
+	theFormulaDiv.innerHTML = formulaHtml;
+
 
 
 	plot(theFunction,
@@ -164,10 +184,10 @@ function plot(aFunction, xMin, xMax, yMin, yMax) {
 	// TODO handle OOB and NaN
 
 	plotContext.beginPath();
-	plotContext.moveTo(0, toCanvasY(aFunction(xMin), yMin, yMax));
+	plotContext.moveTo(0, toCanvasY(aFunction({x: xMin}), yMin, yMax));
 	for (i = 1; i <= wI; i++) {
 		var x = toX(i, xMin, xMax);
-		var y = aFunction(x);
+		var y = aFunction({x: x});
 		var plotCanvasY = toCanvasY(y, yMin, yMax);
 		plotContext.lineTo(i, plotCanvasY);
 	}

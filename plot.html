@@ -16,17 +16,10 @@ canvas {
 	position: absolute;
 }
 
-#thePlotCanvas {
-	z-index: 3;
-}
+#thePlotCanvas {z-index: 3;}
+#theAxesCanvas {z-index: 2;}
+#theGridCanvas {z-index: 1;}
 
-#theAxesCanvas {
-	z-index: 2;
-}
-
-#theGridCanvas {
-	z-index: 1;
-}
 </style>
 
 
@@ -62,6 +55,8 @@ canvas {
 
 	<!-- Main content -->
 	<h1>Plot a function</h1>
+	
+	<div id="theFormulaDiv"></div>
 
 	<div id="stage">
 		<canvas id="thePlotCanvas" width="600" height="600"></canvas>
@@ -71,29 +66,48 @@ canvas {
 
 	<div class="refmap">
 		<h2>Explanation</h2>
-		<p>The specified function is plotted, from x-min to x-max.</p>
+		<p>Specify a function of <em>x</em> to be plotted, from <em>x-min</em> to <em>x-max</em>.</p>
+		<p>Supported formats are:</p>
+		<ul>
+		<li>ASCIIMath -- e.g. 5x^4-2 , Never bother about multiplication symbols (like *)
+		<li>LaTeX -- Just check the box!
+		</ul>
+		
+		<p>Evaluation of the specified function is through 
+		<a href="https://arthanzel.github.io/evaluatex/" target="_blank">Evaluatex</a>. <br>
+		Rendering of the formula is performed by <a href="https://katex.org" target="_blank">KaTex</a>.
+		</p>
+		
 	</div>
 
 	<div class="controls">
 		<h2>Parameters</h2>
 		<form>
 			<p>
-				<input id="functionInput" type="text"
-					placeholder="Enter a function of x" />
+				<label for="functionInput">Enter a function of x:</label> <br>
+				<textarea id="functionInput" name="functionInput" rows="10" cols="50" placeholder="Specify here">
+				</textarea>
+				<input id="latexCheckbox" type="checkbox" /> LaTeX
 			</p>
 			<p>
-				<input id="xMinInput" type="text" pattern="\d+(\.\d+)?"
-					placeholder="Enter x-min" /> <input id="xMaxInput" type="text"
-					pattern="\d+(\.\d+)?" placeholder="Enter x-max" />
+				<label for="paramInput">Enter parameters:</label>
+				<input id="paramInput" type="text" 	placeholder="Specify the function parameters (if any)" size="32" />
 			</p>
 			<p>
-				<input id="yMinInput" type="text" pattern="\d+(\.\d+)?"
-					placeholder="Enter y-min" /> <input id="yMaxInput" type="text"
-					pattern="\d+(\.\d+)?" placeholder="Enter y-max" />
+				<label for="xMinInput">x-min:</label>
+				<input id="xMinInput" type="text" pattern="\d+(\.\d+)?"	placeholder="Enter x-min" size="10" />
+				<label for="xMaxInput">x-max:</label>
+				<input id="xMaxInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter x-max" size="10" />
 			</p>
 			<p>
-				<input id="axesCheckbox" type="checkbox" /> Show axes <input
-					id="gridCheckbox" type="checkbox" /> Show grid
+				<label for="yMinInput">y-min:</label>
+				<input id="yMinInput" type="text" pattern="\d+(\.\d+)?"	placeholder="Enter y-min" size="10" /> 
+				<label for="yMaxInput">y-max:</label>
+				<input id="yMaxInput" type="text" pattern="\d+(\.\d+)?" placeholder="Enter y-max" size="10" />
+			</p>
+			<p>
+				<input id="axesCheckbox" type="checkbox" /> Show axes 
+				<input id="gridCheckbox" type="checkbox" /> Show grid
 			</p>
 			<p>
 				<input id="drawButton" type="button" value="Draw!" /> <input
@@ -104,7 +118,7 @@ canvas {
 
 	<!-- Sign and date -->
 	<address>
-		26 August 2021<br> thijswijs@gmail.com
+		September 2021<br> thijswijs@gmail.com
 	</address>
 
 </body>
