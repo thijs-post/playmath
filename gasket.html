@@ -9,6 +9,16 @@
     var canvas;
     var context;
     
+    var depthSlider;
+    var distortiohSlider;
+    
+    var depthOut;
+    var distortionOut;
+    
+    var depth = 0;
+    var distortion = 0;
+    
+    
     window.onload = init;
       
     function init() {
@@ -16,27 +26,27 @@
       canvas = document.getElementById("theCanvas");
       context = canvas.getContext("2d");
       
-      var drawButton = document.getElementById("drawButton");
-      drawButton.onclick = handleDrawButtonClick;
-      
-      var clearButton = document.getElementById("clearButton");
-      clearButton.onclick = handleClearButtonClick;
-      
+      depthOut = document.getElementById("depthOut");
+      distortionOut = document.getElementById("distortionOut");
+
+      depthSlider = document.getElementById("depthRange");
+      depthSlider.oninput = handleSliderInput;
+      distortionSlider = document.getElementById("distortionRange");
+      distortionSlider.oninput = handleSliderInput;
+      handleSliderInput();
+
     }
-      
-    function handleDrawButtonClick() {
-      
-      var depthInput = document.getElementById("depthInput");
-      var distortionInput = document.getElementById("distortionInput");
-      
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      gasket(depthInput.value, distortionInput.value, 50.0,693.0, 850.0,693.0, 450.0,0.0);
+    
+
+    
+    function handleSliderInput() {
+    	depth = depthSlider.value;
+        depthOut.innerHTML = depth;
+    	distortion = distortionSlider.value / 20.0;
+        distortionOut.innerHTML = distortion;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        gasket(depth, distortion, 50.0,693.0, 850.0,693.0, 450.0,0.0);
     }
-      
-    function handleClearButtonClick() {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-    }
-      
     
     //
     //             C
@@ -134,19 +144,21 @@
 
 <div class="controls">
   <h2>Parameters</h2>
-  <form>
-    <p><input id="depthInput" type="text" pattern="\d" placeholder="Enter depth (1 to 9)"/></p>
-    <p><input id="distortionInput" type="text" pattern="0?\.\d+" placeholder="Enter distortion (0.0 to 0.999)"/></p>
-    <p>
-      <input id="drawButton" type="button" value="Draw!"/>
-      <input id="clearButton" type="button" value="Clear!"/>
+	<p>
+	    <label for="depthRange">Depth:</label> <br>
+		<input id="depthRange" type="range" min="0" max="9" value="0" class="slider">
+		<span id="depthOut"></span>
     </p>
-  </form>
+	<p>
+	    <label for="distortionRange">Distortion:</label> <br>
+		<input id="distortionRange" type="range" min="0" max="19" value="0" class="slider">
+		<span id="distortionOut"></span>
+    </p>
 </div>
 
 <!-- Sign and date -->
 <address>
-  26 January 2014<br>
+  15 Oct 2021<br>
   thijswijs@gmail.com
 </address>
 
